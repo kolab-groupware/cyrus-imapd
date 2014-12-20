@@ -131,6 +131,10 @@ EXPORTED const char *sieve_listextensions(sieve_interp_t *i)
 	if (i->getbody &&
 	    (config_sieve_extensions & IMAP_ENUM_SIEVE_EXTENSIONS_BODY))
 	    strlcat(i->extensions, " body", EXT_LEN);
+	if (config_sieve_extensions & IMAP_ENUM_SIEVE_EXTENSIONS_DATE)
+	    strlcat(i->extensions, " date", EXT_LEN);
+	if (config_sieve_extensions & IMAP_ENUM_SIEVE_EXTENSIONS_INDEX)
+	    strlcat(i->extensions, " index", EXT_LEN);
 
 	/* add match-types */
 	if (config_sieve_extensions & IMAP_ENUM_SIEVE_EXTENSIONS_RELATIONAL)
