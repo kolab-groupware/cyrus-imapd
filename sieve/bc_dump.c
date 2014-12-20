@@ -274,8 +274,6 @@ static int dump_test(bytecode_info_t *d, int ip, int level ) {
 	ip = dump_sl(d,ip,level);
 	break;
 
-	break;
-
     default:
 	printf("%d: TEST(%d)\n",ip,d->data[ip].op);
 	break;

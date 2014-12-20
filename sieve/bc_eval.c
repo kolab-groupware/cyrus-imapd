@@ -1017,7 +1017,6 @@ envelope_err:
 				res = SIEVE_FAIL;
 				goto alldone;
 			}
-			header_count = index + 1;
 		}
 		else if (index < 0) {
 			index += header_count;
@@ -1025,14 +1024,8 @@ envelope_err:
 				res = SIEVE_FAIL;
 				goto alldone;
 			}
-			header_count = index + 1;
 		}
 
-		/* check if index is out of bounds */
-		if (index < 0 || index >= header_count) {
-			res = SIEVE_FAIL;
-			goto alldone;
-		}
 		header = headers[index];
 
 		/* look for separator */
