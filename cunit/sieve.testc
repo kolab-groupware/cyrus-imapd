@@ -956,7 +956,7 @@ static void test_address_index(void)
 
     static const char SCRIPT_LAST[] =
     "require [\"index\"];\n"
-    "if address :index 3 :last :is \"from\" \"zme@true.com\"\n"
+    "if address :last :index 3 :is \"from\" \"zme@true.com\"\n"
     "{redirect \"me@blah.com\";}\n"
     ;
 

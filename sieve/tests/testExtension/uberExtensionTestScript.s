@@ -172,6 +172,9 @@ if date :is :index 2 "received" "day" "01"
 if date :is :index 1 :last "received" "day" "01"
 {redirect "me+firstofthemonth@blah.com";}
 
+if date :is :last :index 1 "received" "day" "01"
+{redirect "me+firstofthemonth(last)@blah.com";}
+
 if currentdate :zone "-0800" :is "year" ["2003", "2013", "2023"]
 {redirect "me+currentdateis@blah.com";}
 

@@ -83,6 +83,7 @@ struct vtags {
 
 struct htags {
     int index;
+    int ilast;
     char *comparator;
     int comptag;
     int relation;
@@ -90,6 +91,7 @@ struct htags {
 
 struct aetags {
     int index;
+    int ilast;
     int addrtag;
     char *comparator;
     int comptag;
@@ -128,6 +130,7 @@ struct itags {
 
 struct dttags {
     int index;
+    int ilast;
     int zonetag;
     char *zone;
     int comptag;
@@ -698,11 +701,9 @@ aetags: /* empty */              { $$ = new_aetags(); }
 				   if (!parse_script->support.index)
 				      { yyerror(parse_script, "index MUST be enabled with \"require\"");
 				        YYERROR; }
-				   if ($$->index == 0) {
-				     yyerror(parse_script, "index argument is required"); YYERROR; }
-				   else if ($$->index < 0) {
+				   if ($$->ilast != 0) {
 				     yyerror(parse_script, "duplicate last argument"); YYERROR; }
-				   else { $$->index *= -1; } }
+				   $$->ilast = 1; }
 	;
 
 htags: /* empty */		 { $$ = new_htags(); }
@@ -739,11 +740,9 @@ htags: /* empty */		 { $$ = new_htags(); }
 				   if (!parse_script->support.index)
 				      { yyerror(parse_script, "index MUST be enabled with \"require\"");
 				        YYERROR; }
-				   if ($$->index == 0) {
-				     yyerror(parse_script, "index argument is required"); YYERROR; }
-				   else if ($$->index < 0) {
+				   if ($$->ilast != 0) {
 				     yyerror(parse_script, "duplicate last argument"); YYERROR; }
-				   else { $$->index *= -1; } }
+				   $$->ilast = 1; }
 	;
 
 btags: /* empty */		 { $$ = new_btags(); }
@@ -824,11 +823,9 @@ dttags: /* empty */              { $$ = new_dttags(); }
                                    if (!parse_script->support.index)
                                       { yyerror(parse_script, "index MUST be enabled with \"require\"");
                                         YYERROR; }
-                                   if ($$->index == 0) {
-                                     yyerror(parse_script, "index argument is required"); YYERROR; }
-                                   else if ($$->index < 0) {
+                                   if ($$->ilast != 0) {
                                      yyerror(parse_script, "duplicate last argument"); YYERROR; }
-                                   else { $$->index *= -1; } }
+                                   $$->ilast = 1; }
 
         | dttags ZONE STRING     { $$ = $1;
                                    if ($$->zonetag != -1) {
@@ -946,7 +943,7 @@ static test_t *build_address(int t, struct aetags *ae,
     assert((t == ADDRESS) || (t == ENVELOPE));
 
     if (ret) {
-	ret->u.ae.index = ae->index;
+	ret->u.ae.index = ae->index * (ae->ilast ? -1 : 1);
 	ret->u.ae.comptag = ae->comptag;
 	ret->u.ae.relation=ae->relation;
 	ret->u.ae.comparator=xstrdup(ae->comparator);
@@ -967,7 +964,7 @@ static test_t *build_header(int t, struct htags *h,
     assert(t == HEADER);
 
     if (ret) {
-	ret->u.h.index = h->index;
+	ret->u.h.index = h->index * (h->ilast ? -1 : 1);
 	ret->u.h.comptag = h->comptag;
 	ret->u.h.relation=h->relation;
 	ret->u.h.comparator=xstrdup(h->comparator);
@@ -1108,7 +1105,7 @@ static test_t *build_date(int t, struct dttags *dt,
     assert(t == DATE || t == CURRENTDATE);
 
     if (ret) {
-        ret->u.dt.index = dt->index;
+        ret->u.dt.index = dt->index * (dt->ilast ? -1 : 1);
         ret->u.dt.zone = (dt->zone ? xstrdup(dt->zone) : NULL);
         ret->u.dt.comparator = xstrdup(dt->comparator);
         ret->u.dt.zonetag = dt->zonetag;
@@ -1128,6 +1125,7 @@ static struct aetags *new_aetags(void)
     struct aetags *r = (struct aetags *) xmalloc(sizeof(struct aetags));
 
     r->index = 0;
+    r->ilast = 0;
     r->addrtag = r->comptag = r->relation=-1;
     r->comparator=NULL;
 
@@ -1155,6 +1153,7 @@ static struct htags *new_htags(void)
     struct htags *r = (struct htags *) xmalloc(sizeof(struct htags));
 
     r->index = 0;
+    r->ilast = 0;
     r->comptag = r->relation= -1;
     
     r->comparator = NULL;
@@ -1264,6 +1263,7 @@ static struct dttags *new_dttags(void)
     struct dttags *dt = (struct dttags *) xmalloc(sizeof(struct dttags));
     dt->comptag = -1;
     dt->index = 0;
+    dt->ilast = 0;
     dt->zonetag = -1;
     dt->relation = -1;
     dt->comparator = NULL;
